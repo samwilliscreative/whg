@@ -1,64 +1,52 @@
 <template>
-  <!-- use form tag -->
-  <!-- make this a component and pass each field and then watch each field for changes to mark as dirty -->
-  <div v-for="field in formFields">
-    {{ field.label }}
-    <input
-      v-if="field.type === 5"
-      v-model="field.value"
-      type="text"
-      class="border"
-      :class="field.isDirty && !field.isValid ? '!text-rose-600' : ''"
-    />
-    <input
-      v-if="field.type === 3"
-      v-model="field.value"
-      type="email"
-      class="border"
-      :class="field.isDirty && !field.isValid ? '!text-rose-600' : ''"
-    />
-    <select
-      v-if="field.type === 2"
-      v-model="field.value"
-      type="email"
-      class="border"
-      :class="field.isDirty && !field.isValid ? '!text-rose-600' : ''"
-    >
-      <option v-for="option in field.options" :value="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-    valid: {{ field.isValid }}. dirty: {{ field.isDirty }}
-  </div>
-  <button @click="validateAndSubmit">Submit</button>
+  <form @submit.prevent="validateAndSubmit" novalidate>
+    <div v-for="field in formFields" class="mb-4">
+      <label :for="field.name" class="block">{{ field.label }}</label>
 
-  {{ fields }}
+      <DynamicFormFieldsTextField
+        v-if="field.type === DynamicFormFieldType.text"
+        :field="field"
+      ></DynamicFormFieldsTextField>
+
+      <DynamicFormFieldsEmailField
+        v-if="field.type === DynamicFormFieldType.email"
+        :field="field"
+      ></DynamicFormFieldsEmailField>
+
+      <DynamicFormFieldsDropdownField
+        v-if="field.type === DynamicFormFieldType.dropdown"
+        :field="field"
+      ></DynamicFormFieldsDropdownField>
+    </div>
+
+    <button type="submit" class="py-2 px-4 bg-green-400 border rounded-lg">
+      Submit
+    </button>
+  </form>
 </template>
 <script setup lang="ts">
 import {
   DynamicFormFieldType,
-  type DynamicFormField,
+  type DynamicFormProps,
 } from "./types/dynamic-form";
 
-const props = defineProps({
-  fields: Array<DynamicFormField>,
-});
+const props = defineProps<DynamicFormProps>();
+const emit = defineEmits(["submitForm"]);
 
-const formFields = ref([...props.fields]);
-// need a function that adds the valid and dirty etc to the fields. create new interface for what is passed to the builder
+const { buildFormFields } = useDynamicForm();
+const { testValidationRequired, testValidationMinChars, testValidationEmail } =
+  useValidation();
 
-const formIsValid = ref(false);
+const formFields = ref([...buildFormFields(props.fields)]);
 
-const validateAndSubmit = () => {
-  validateFields();
-
-  if (formIsValid.value) {
-    // emit submit event
+const validateAndSubmit = (): void => {
+  if (validateFields()) {
+    emit("submitForm", formFields.value);
   }
 };
 
-const validateFields = () => {
-  formFields.value?.forEach((field) => {
+const validateFields = (): boolean => {
+  formFields.value.forEach((field) => {
     const testsToDo = [];
 
     field.validation?.forEach((v) => {
@@ -78,31 +66,13 @@ const validateFields = () => {
       testsToDo.push(testValidationEmail(field.value));
     }
 
-    const tests = testsToDo.every((t) => t);
+    const doAllTestsPass = testsToDo.every((t) => t);
 
-    field.isValid = tests;
+    field.isValid = doAllTestsPass;
+    field.isValidated = true;
     field.isDirty = true;
-    debugger;
-
-    return tests;
   });
 
-  formIsValid.value = !!formFields.value?.every((f) => f.isValid);
-};
-
-const testValidationRequired = (fieldValue): boolean => {
-  return !!fieldValue;
-};
-
-const testValidationMinChars = (fieldValue): boolean => {
-  return fieldValue?.length >= 2;
-};
-
-const testValidationEmail = (fieldValue): boolean => {
-  return !!String(fieldValue)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
+  return !!formFields.value?.every((f) => f.isValid);
 };
 </script>

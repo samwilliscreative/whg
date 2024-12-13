@@ -1,24 +1,31 @@
 <template>
   <div>
-    <h1>This is my form</h1>
-    <DynamicForm :fields="formFields"></DynamicForm>
+    <h1 class="mb-4 text-2xl">This is my form</h1>
+
+    <DynamicForm
+      :fields="formFields"
+      @submitForm="handleSubmitForm"
+    ></DynamicForm>
+
+    <p v-if="showSuccessMessage" class="mt-4">Form submitted succesfully!</p>
   </div>
 </template>
 <script setup lang="ts">
 import {
   DynamicFormFieldType,
+  type DynamicFormData,
   type DynamicFormField,
 } from "./components/DynamicForm/types/dynamic-form";
 
-const formFields: DynamicFormField[] = [
+const showSuccessMessage = ref(false);
+
+const formFields: DynamicFormData[] = [
   {
     name: "name",
     label: "Name",
     type: DynamicFormFieldType.text,
     value: null,
     validation: [{ required: true }, { minChars: 2 }],
-    isValid: false,
-    isDirty: false,
   },
   {
     name: "email",
@@ -26,24 +33,6 @@ const formFields: DynamicFormField[] = [
     type: DynamicFormFieldType.email,
     value: null,
     validation: [{ required: true }],
-    isValid: false,
-    isDirty: false,
-  },
-  {
-    name: "password",
-    label: "Password",
-    type: DynamicFormFieldType.password,
-    value: null,
-    isValid: false,
-    isDirty: false,
-  },
-  {
-    name: "date",
-    label: "Date",
-    type: DynamicFormFieldType.date,
-    value: null,
-    isValid: false,
-    isDirty: false,
   },
   {
     name: "service",
@@ -55,16 +44,10 @@ const formFields: DynamicFormField[] = [
     ],
     value: null,
     validation: [{ required: true }],
-    isValid: false,
-    isDirty: false,
-  },
-  {
-    name: "terms",
-    label: "Terms and Conditions ",
-    type: DynamicFormFieldType.checkbox,
-    value: null,
-    isValid: false,
-    isDirty: false,
   },
 ];
+
+const handleSubmitForm = (formData: DynamicFormField[]): void => {
+  showSuccessMessage.value = true;
+};
 </script>
