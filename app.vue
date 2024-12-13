@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col p-4">
     <h1 class="mb-4 text-2xl">This is my form</h1>
 
     <DynamicForm
