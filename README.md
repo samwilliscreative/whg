@@ -1,7 +1,3 @@
-# Nuxt Minimal Starter
-
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
-
 ## Setup
 
 Make sure to install dependencies:
@@ -38,38 +34,8 @@ yarn dev
 bun run dev
 ```
 
-## Production
+## Notes
 
-Build the application for production:
+Given more time, I would extend the validation to include messages for each rule, and display these when the validation check has failed.
 
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+I would also add templates for each form type, and include full tailwind classes for styling.
