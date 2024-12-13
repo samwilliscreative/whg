@@ -1,3 +1,7 @@
+export type DynamicFormProps = {
+  fields: DynamicFormData[];
+};
+
 export enum DynamicFormFieldType {
   checkbox,
   date,
@@ -17,13 +21,17 @@ export interface DynamicFormFieldOption {
   label: string;
 }
 
-export type DynamicFormField = {
+export type DynamicFormData = {
   name: string;
   label: string;
   type: DynamicFormFieldType;
   options?: DynamicFormFieldOption[];
   value: null | string | number;
   validation?: DynamicFormValidationRule[];
-  isValid: boolean;
-  isDirty: boolean;
 };
+
+export interface DynamicFormField extends DynamicFormData {
+  isValid: null | boolean;
+  isValidated: boolean;
+  isDirty: boolean;
+}
