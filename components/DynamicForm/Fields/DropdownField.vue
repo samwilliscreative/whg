@@ -1,0 +1,25 @@
+<template>
+  <select
+    v-model="field.value"
+    :id="field.name"
+    @change="(field.isDirty = true), (field.isValidated = false)"
+    type="email"
+    class="border"
+    :class="getErrorClass(field)"
+  >
+    <option v-for="option in field.options" :value="option.value">
+      {{ option.label }}
+    </option>
+  </select>
+</template>
+<script setup lang="ts">
+import type { DynamicFormField } from "../types/dynamic-form";
+
+const { getErrorClass } = useDynamicForm();
+
+interface TextFieldProps {
+  field: DynamicFormField;
+}
+
+defineProps<TextFieldProps>();
+</script>
